@@ -2,11 +2,10 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GetProducts } from "../../apicalls/products";
 import { SetLoader } from "../../redux/loadersSlice";
-import { message } from "antd";
+import { message, Button } from "antd"; // Import Ant Design Button component
 import Divider from "../../components/Divider";
 import { useNavigate } from "react-router-dom";
 import Filters from "./Filters";
-import moment from "moment";
 
 function Home() {
   const [showFilters, setShowFilters] = React.useState(true);
@@ -19,6 +18,7 @@ function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.users);
+
   const getData = async () => {
     try {
       dispatch(SetLoader(true));
@@ -37,6 +37,11 @@ function Home() {
     getData();
   }, [filters]);
 
+  // Chat button handler
+  const goToChatRoom = () => {
+    navigate("/chat");
+  };
+
   return (
     <div className="flex gap-5">
       {showFilters && (
@@ -48,7 +53,7 @@ function Home() {
         />
       )}
       <div className="flex flex-col gap-5 w-full">
-        <div className="flex gap-5 items-center">
+        <div className="flex gap-5 items-center justify-between">
           {!showFilters && (
             <i
               className="ri-equalizer-line text-xl cursor-pointer"
@@ -60,7 +65,13 @@ function Home() {
             placeholder="Search Products  here..."
             className="border border-gray-300 rounded border-solid px-2 py-1 h-14 w-full"
           />
+
+          {/* Chat Room Button */}
+          <Button type="primary" onClick={goToChatRoom}>
+            Go to Chat Room
+          </Button>
         </div>
+
         <div
           className={`
         grid gap-5 ${showFilters ? "grid-cols-4" : "grid-cols-5"}
@@ -74,9 +85,9 @@ function Home() {
                 onClick={() => navigate(`/product/${product._id}`)}
               >
                 <img
-                  src={product.images[0]}
+                  src={product.images[0] || "fallback-image-url"} // Add a fallback image
                   className="w-full h-52 p-2 rounded-md object-cover"
-                  alt=""
+                  alt={product.name || "Product"}
                 />
                 <div className="px-2 flex flex-col">
                   <h1 className="text-lg font-semibold">{product.name}</h1>
